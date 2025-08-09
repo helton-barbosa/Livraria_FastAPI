@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 app = FastAPI()
 
@@ -14,8 +14,8 @@ BOOK_DATABASE = [
 # Planejamento da API Livraria
 # / ----------------------------> boas vindas [Endpoint criada]
 # /list-books ------------------> listar todos os livros [Endpoint criada]
-# /list-book-by-index/{index} --> listar um livro
-# /get-random-boom -------------> sugerir um livro aleatório
+# /list-book-by-index/{index} --> listar um livro [Endpoint criada]
+# /get-random-book -------------> sugerir um livro aleatório
 # /add-book --------------------> adicionar um novo livro
 
 @app.get("/")
@@ -28,5 +28,9 @@ async def list_books():
 
 @app.get("/list-book-by-index{index}")
 async def list_book_by_index(index: int):
-    return { "books": BOOK_DATABASE[index] }
+    if index < 0 or index >= len(BOOK_DATABASE):
+        raise HTTPException(404, "Index out of range")
+    else:
+        return { "books": BOOK_DATABASE[index] }
+
 
