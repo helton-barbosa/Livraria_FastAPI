@@ -19,10 +19,14 @@ BOOK_DATABASE = [
 # /add-book --------------------> adicionar um novo livro
 
 @app.get("/")
-async def home():
+async def home() -> str:
     return "Seja bem-vindo à Livraria!"
 
 @app.get("/list-books")
 async def list_books():
     return { "books": [BOOK_DATABASE] }
+
+@app.get("/list-book-by-index{index}")
+async def list_book_by_index(index: int):
+    return { "books": BOOK_DATABASE[index] }
 
