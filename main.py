@@ -16,7 +16,7 @@ BOOK_DATABASE = [
 # /list-books ------------------> listar todos os livros [Endpoint criada]
 # /list-book-by-index/{index} --> listar um livro [Endpoint criada]
 # /get-random-book -------------> sugerir um livro aleatório [Endpoint criada]
-# /add-book --------------------> adicionar um novo livro
+# /add-book --------------------> adicionar um novo livro [Endpoint criada]
 
 @app.get("/")
 async def home() -> str:
@@ -37,4 +37,9 @@ async def list_book_by_index(index: int):
 async def get_random_book():
     livro_sorteado = choice(BOOK_DATABASE)
     return { "books": livro_sorteado }
+
+@app.post("/add-book")
+async def add_book(book: str):
+    BOOK_DATABASE.append(book)
+    return { "message": f"Book '{book}' was added!" }
 
