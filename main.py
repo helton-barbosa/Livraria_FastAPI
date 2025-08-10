@@ -1,19 +1,23 @@
 import json
 import os
+from typing import Literal, Optional
+from uuid import uuid4
 from fastapi import FastAPI, HTTPException
 from random import choice
+from pydantic import BaseModel
+from fastapi.encoders import jsonable_encoder
+
 app = FastAPI()
 
-BOOKS_FILE = "books.json"
+class Book(BaseModel):
+    name: str
+    price: float
+    book_id: Optional[str] = uuid4().hex
+    genre: Literal["fiction", "non-fiction"]
 
-BOOK_DATABASE = [
-    "Programando em Turbo Pascal 7.0",
-    "Absolute FreeBSD - The Complete Guide to FreeBSD",
-    "Aplicações iOS com Lazarus",
-    "Linux A Bíblia",
-    "Think Python",
-    "Robust Python",
-]
+
+BOOK_DATABASE = []
+BOOKS_FILE = "books.json"
 
 if os.path.exists(BOOKS_FILE):
     with open (BOOKS_FILE, "r") as f:
@@ -47,8 +51,11 @@ async def get_random_book():
     return { "books": livro_sorteado }
 
 @app.post("/add-book")
-async def add_book(book: str):
-    BOOK_DATABASE.append(book)
+async def add_book(book: Book):
+    book.book_id = uuid4().hex
+    json_book = jsonable_encoder(book)
+    BOOK_DATABASE.append(json_book)
+
     with open (BOOKS_FILE, "w") as f:
         json.dump(BOOK_DATABASE, f)
     return { "message": f"Book '{book}' was added!" }
