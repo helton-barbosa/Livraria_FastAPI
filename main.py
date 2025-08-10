@@ -1,6 +1,10 @@
+import json
+import os
 from fastapi import FastAPI, HTTPException
 from random import choice
 app = FastAPI()
+
+BOOKS_FILE = "books.json"
 
 BOOK_DATABASE = [
     "Programando em Turbo Pascal 7.0",
@@ -10,6 +14,10 @@ BOOK_DATABASE = [
     "Think Python",
     "Robust Python",
 ]
+
+if os.path.exists(BOOKS_FILE):
+    with open (BOOKS_FILE, "r") as f:
+        BOOK_DATABASE = json.load(f)
 
 # Planejamento da API Livraria
 # / ----------------------------> boas vindas [Endpoint criada]
@@ -41,5 +49,7 @@ async def get_random_book():
 @app.post("/add-book")
 async def add_book(book: str):
     BOOK_DATABASE.append(book)
+    with open (BOOKS_FILE, "w") as f:
+        json.dump(BOOK_DATABASE, f)
     return { "message": f"Book '{book}' was added!" }
 
